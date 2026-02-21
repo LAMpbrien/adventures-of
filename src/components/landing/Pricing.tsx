@@ -14,7 +14,7 @@ const features = [
 export function Pricing() {
   return (
     <section className="py-20 bg-gray-50">
-      <div className="mx-auto max-w-md px-6">
+      <div className="mx-auto max-w-md px-4 sm:px-6">
         <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
           Simple Pricing
         </h2>
@@ -36,7 +36,7 @@ export function Pricing() {
               ))}
             </ul>
             <Link href="/create">
-              <Button size="lg" className="w-full bg-amber-600 hover:bg-amber-700">
+              <Button size="lg" className="w-full bg-amber-600 hover:bg-amber-700 active:bg-amber-800">
                 Create Your Story
               </Button>
             </Link>

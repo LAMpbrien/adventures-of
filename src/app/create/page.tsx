@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { PhotoUploader } from "@/components/create/PhotoUploader";
@@ -34,6 +34,14 @@ function CreateFlow() {
   const [generating, setGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState<GenerationStep>("uploading");
   const [error, setError] = useState<string | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Clean up polling on unmount
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
 
   // Child selection state
   const [selectedChild, setSelectedChild] = useState<Child | null>(null);
@@ -126,6 +134,38 @@ function CreateFlow() {
     ? THEMES.find((t) => t.id === theme)?.region ?? "global"
     : region;
 
+  // Poll book status until generation completes or fails
+  const pollStatus = (bookId: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/book/${bookId}/status`);
+        if (!res.ok) return; // Transient error, keep polling
+
+        const { status } = await res.json();
+
+        if (status === "generating_story") {
+          setGenerationStep("generating_story");
+        } else if (status === "generating_images") {
+          setGenerationStep("generating_images");
+        } else if (status === "preview_ready") {
+          clearInterval(interval);
+          pollIntervalRef.current = null;
+          setGenerationStep("done");
+          router.push(`/preview/${bookId}`);
+        } else if (status === "failed") {
+          clearInterval(interval);
+          pollIntervalRef.current = null;
+          setError("Generation failed. Please try again.");
+          setGenerating(false);
+        }
+      } catch {
+        // Network error (e.g. phone waking up) — keep polling
+      }
+    }, 3000);
+
+    pollIntervalRef.current = interval;
+  };
+
   const handleSubmit = async () => {
     if (!theme) return;
     setGenerating(true);
@@ -190,35 +230,19 @@ function CreateFlow() {
 
       const { book_id, child_id } = await createResponse.json();
 
-      // Trigger story generation
+      // Fire off server-side generation (don't await — server runs independently)
       setGenerationStep("generating_story");
-      const genResponse = await fetch("/api/generate-story", {
+      fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ child_id, book_id, theme, region: selectedRegion }),
+      }).catch(() => {
+        // Connection may drop (e.g. phone lock) — that's fine,
+        // the server keeps running and we poll for status
       });
 
-      if (!genResponse.ok) {
-        const errData = await genResponse.json();
-        throw new Error(errData.error || `Story generation failed (${genResponse.status})`);
-      }
-
-      // Trigger preview image generation
-      setGenerationStep("generating_images");
-      const imgResponse = await fetch("/api/generate-images", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ book_id, mode: "preview" }),
-      });
-
-      if (!imgResponse.ok) {
-        const errData = await imgResponse.json();
-        throw new Error(errData.error || `Image generation failed (${imgResponse.status})`);
-      }
-
-      // Redirect to preview
-      setGenerationStep("done");
-      router.push(`/preview/${book_id}`);
+      // Poll for status updates instead of waiting on the fetch response
+      pollStatus(book_id);
     } catch (err) {
       console.error("Creation error:", err);
       setError(getUserMessage(err));
@@ -238,7 +262,7 @@ function CreateFlow() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
-      <div className="mx-auto max-w-2xl px-6 py-12">
+      <div className="mx-auto max-w-2xl md:max-w-3xl px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
@@ -304,7 +328,7 @@ function CreateFlow() {
               <Button
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!canProceed()}
-                className="bg-amber-600 hover:bg-amber-700"
+                className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800"
               >
                 Continue
               </Button>
@@ -312,7 +336,7 @@ function CreateFlow() {
               <Button
                 onClick={handleSubmit}
                 disabled={!canProceed()}
-                className="bg-amber-600 hover:bg-amber-700"
+                className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800"
               >
                 Create My Story
               </Button>

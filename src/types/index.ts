@@ -50,6 +50,8 @@ export const ILLUSTRATION_STYLES: StyleInfo[] = [
 
 export type BookStatus =
   | "generating"
+  | "generating_story"
+  | "generating_images"
   | "preview_ready"
   | "paid"
   | "complete"

@@ -190,12 +190,12 @@ export function BookViewer({
       </div>
 
       {/* Bottom bar — page indicators + unlock CTA */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 pb-4 pt-2 flex flex-col items-center gap-3">
+      <div className="absolute bottom-0 left-0 right-0 z-20 pb-4 pt-2 flex flex-col items-center gap-3" style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}>
         {/* Unlock CTA for locked pages */}
         {isLocked && onUnlock && (
           <button
             onClick={onUnlock}
-            className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-full shadow-lg transition-colors"
+            className="px-6 py-3 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold rounded-full shadow-lg transition-colors"
           >
             Unlock Full Story
           </button>

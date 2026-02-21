@@ -35,11 +35,14 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const rawRedirect = searchParams.get("redirect") || "/dashboard";
   const redirect = rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : "/dashboard";
+  const authError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(
+    authError === "auth_failed" ? "Sign-in link expired or was already used. Please try again." : null
+  );
 
   const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
@@ -82,7 +85,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center p-4 sm:p-6">
       <Card className="w-full max-w-sm">
         <CardContent className="pt-6">
           <div className="text-center mb-6">
@@ -144,7 +147,7 @@ function LoginForm() {
                 <Button
                   type="submit"
                   disabled={loading || !email}
-                  className="w-full bg-amber-600 hover:bg-amber-700"
+                  className="w-full bg-amber-600 hover:bg-amber-700 active:bg-amber-800"
                 >
                   {loading ? "Sending..." : "Send Magic Link"}
                 </Button>

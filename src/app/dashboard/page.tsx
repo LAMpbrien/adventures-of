@@ -104,7 +104,7 @@ export default function DashboardPage() {
           <p className="text-gray-600 mb-6">{error}</p>
           <Button
             onClick={() => window.location.reload()}
-            className="bg-amber-600 hover:bg-amber-700"
+            className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800"
           >
             Try Again
           </Button>
@@ -114,12 +114,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white py-12">
-      <div className="mx-auto max-w-3xl px-6">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Storybooks</h1>
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white py-8 sm:py-12">
+      <div className="mx-auto max-w-3xl md:max-w-4xl px-4 sm:px-6">
+        <div className="flex justify-between items-center mb-8 gap-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Storybooks</h1>
           <Link href="/create">
-            <Button className="bg-amber-600 hover:bg-amber-700">
+            <Button className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800 whitespace-nowrap">
               Create New Story
             </Button>
           </Link>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
               Create your first personalized storybook!
             </p>
             <Link href="/create">
-              <Button className="bg-amber-600 hover:bg-amber-700">
+              <Button className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800">
                 Get Started
               </Button>
             </Link>
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                     <button
                       onClick={() => handleDelete(book.id)}
                       disabled={deletingId === book.id}
-                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm text-gray-400 hover:text-red-500 hover:bg-red-50 active:bg-red-100 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all"
                       aria-label="Delete book"
                     >
                       {deletingId === book.id ? (
