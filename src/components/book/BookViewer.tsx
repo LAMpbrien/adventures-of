@@ -28,6 +28,18 @@ export function BookViewer({
   const sortedPages = [...pages].sort((a, b) => a.page_number - b.page_number);
   const page = sortedPages[currentPage];
 
+  // Preload adjacent page images
+  useEffect(() => {
+    const toPreload = [currentPage - 1, currentPage + 1];
+    toPreload.forEach((i) => {
+      const url = sortedPages[i]?.image_url;
+      if (url) {
+        const img = new Image();
+        img.src = url;
+      }
+    });
+  }, [currentPage, sortedPages]);
+
   const goNext = useCallback(() => {
     if (currentPage >= sortedPages.length - 1 || isTransitioning) return;
     setDirection("left");
@@ -125,6 +137,7 @@ export function BookViewer({
       >
         {/* Page with transition */}
         <div
+          key={page.id}
           className={`absolute inset-0 transition-all duration-200 ease-in-out ${transitionClass}`}
         >
           <BookPage page={page} locked={isLocked} />

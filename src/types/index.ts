@@ -13,6 +13,41 @@ export type Theme =
 
 export type ImageQuality = "fast" | "standard";
 
+export type IllustrationStyle =
+  | "watercolor"
+  | "storybook"
+  | "cartoon"
+  | "pencil-sketch";
+
+export interface StyleInfo {
+  id: IllustrationStyle;
+  name: string;
+  description: string;
+}
+
+export const ILLUSTRATION_STYLES: StyleInfo[] = [
+  {
+    id: "watercolor",
+    name: "Watercolor",
+    description: "Warm, soft watercolor with bold colors and gentle lines",
+  },
+  {
+    id: "storybook",
+    name: "Classic Storybook",
+    description: "Traditional picture book illustration with rich gouache textures",
+  },
+  {
+    id: "cartoon",
+    name: "Cartoon",
+    description: "Bright, modern cartoon style with clean outlines",
+  },
+  {
+    id: "pencil-sketch",
+    name: "Pencil Sketch",
+    description: "Gentle pencil and ink sketch with soft shading",
+  },
+];
+
 export type BookStatus =
   | "generating"
   | "preview_ready"
@@ -39,7 +74,9 @@ export interface Book {
   theme: Theme;
   region: Region;
   image_quality: ImageQuality;
+  illustration_style: IllustrationStyle;
   status: BookStatus;
+  character_appearance: string | null;
   stripe_session_id: string | null;
   stripe_payment_intent_id: string | null;
   created_at: string;
@@ -66,6 +103,7 @@ export interface StoryPage {
 
 export interface StoryOutput {
   title: string;
+  character_appearance: string;
   pages: StoryPage[];
 }
 
@@ -82,6 +120,7 @@ export interface CreateBookInput {
   // Book details
   theme: Theme;
   region: Region;
+  illustration_style: IllustrationStyle;
 }
 
 // Theme metadata for the picker

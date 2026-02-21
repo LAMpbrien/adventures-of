@@ -20,7 +20,7 @@ export function PhotoUploader({ photos, onPhotosChange }: PhotoUploaderProps) {
       const newFiles = Array.from(files).filter((f) =>
         f.type.startsWith("image/")
       );
-      const totalFiles = [...photos, ...newFiles].slice(0, 3);
+      const totalFiles = [...photos, ...newFiles].slice(0, 10);
       onPhotosChange(totalFiles);
 
       // Generate previews
@@ -77,7 +77,7 @@ export function PhotoUploader({ photos, onPhotosChange }: PhotoUploaderProps) {
           Tap to take a photo or choose from library
         </p>
         <p className="text-sm text-gray-400 mt-1">
-          Upload 2-3 clear photos of your child (face visible)
+          Upload up to 10 clear photos of your child (face visible)
         </p>
       </div>
 
@@ -107,7 +107,7 @@ export function PhotoUploader({ photos, onPhotosChange }: PhotoUploaderProps) {
       )}
 
       <p className="text-sm text-gray-500">
-        {photos.length}/3 photos uploaded
+        {photos.length}/10 photos uploaded
         {photos.length < 2 && " (minimum 2 required)"}
       </p>
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { getThemesForRegion, type Theme, type Region, type ImageQuality } from "@/types";
+import { getThemesForRegion, ILLUSTRATION_STYLES, type Theme, type Region, type ImageQuality, type IllustrationStyle } from "@/types";
 
 interface ThemePickerProps {
   selectedTheme: Theme | null;
@@ -9,6 +9,8 @@ interface ThemePickerProps {
   onRegionChange: (region: Region) => void;
   imageQuality: ImageQuality;
   onImageQualityChange: (quality: ImageQuality) => void;
+  illustrationStyle: IllustrationStyle;
+  onIllustrationStyleChange: (style: IllustrationStyle) => void;
 }
 
 const REGIONS: { id: Region; label: string; flag: string }[] = [
@@ -22,7 +24,7 @@ const QUALITY_OPTIONS: { id: ImageQuality; label: string; description: string }[
   { id: "standard", label: "Best", description: "Highest quality, takes longer" },
 ];
 
-export function ThemePicker({ selectedTheme, onThemeSelect, region, onRegionChange, imageQuality, onImageQualityChange }: ThemePickerProps) {
+export function ThemePicker({ selectedTheme, onThemeSelect, region, onRegionChange, imageQuality, onImageQualityChange, illustrationStyle, onIllustrationStyleChange }: ThemePickerProps) {
   const themes = getThemesForRegion(region);
   const globalThemes = themes.filter((t) => t.region === "global");
   const localThemes = themes.filter((t) => t.region !== "global");
@@ -107,6 +109,30 @@ export function ThemePicker({ selectedTheme, onThemeSelect, region, onRegionChan
               <div className="text-4xl mb-3">{theme.emoji}</div>
               <h3 className="text-lg font-semibold text-gray-900">{theme.name}</h3>
               <p className="text-sm text-gray-600 mt-1">{theme.description}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Illustration style */}
+      <div>
+        <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-3">
+          Illustration Style
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          {ILLUSTRATION_STYLES.map((style) => (
+            <button
+              key={style.id}
+              type="button"
+              className={`px-4 py-3 min-h-11 rounded-lg border-2 text-left transition-all ${
+                illustrationStyle === style.id
+                  ? "border-amber-500 bg-amber-50"
+                  : "border-gray-200 hover:border-amber-300"
+              }`}
+              onClick={() => onIllustrationStyleChange(style.id)}
+            >
+              <span className="font-medium text-gray-900">{style.name}</span>
+              <p className="text-xs text-gray-500 mt-0.5">{style.description}</p>
             </button>
           ))}
         </div>

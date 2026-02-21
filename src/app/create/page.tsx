@@ -8,7 +8,7 @@ import { ChildDetailsForm } from "@/components/create/ChildDetailsForm";
 import { ThemePicker } from "@/components/create/ThemePicker";
 import { ChildSelector } from "@/components/create/ChildSelector";
 import { GeneratingState, type GenerationStep } from "@/components/create/GeneratingState";
-import type { Theme, ReadingLevel, Region, Child, ImageQuality } from "@/types";
+import type { Theme, ReadingLevel, Region, Child, ImageQuality, IllustrationStyle } from "@/types";
 import { THEMES } from "@/types";
 import { createClient } from "@/lib/supabase/client";
 import { getUserMessage } from "@/lib/errors";
@@ -52,6 +52,7 @@ function CreateFlow() {
   const [theme, setTheme] = useState<Theme | null>(null);
   const [region, setRegion] = useState<Region>("global");
   const [imageQuality, setImageQuality] = useState<ImageQuality>("fast");
+  const [illustrationStyle, setIllustrationStyle] = useState<IllustrationStyle>("watercolor");
 
   // Deep-link: auto-select child from ?child_id param
   useEffect(() => {
@@ -178,6 +179,7 @@ function CreateFlow() {
           theme,
           region: selectedRegion,
           image_quality: imageQuality,
+          illustration_style: illustrationStyle,
         }),
       });
 
@@ -281,7 +283,7 @@ function CreateFlow() {
             />
           )}
           {step === 3 && (
-            <ThemePicker selectedTheme={theme} onThemeSelect={setTheme} region={region} onRegionChange={setRegion} imageQuality={imageQuality} onImageQualityChange={setImageQuality} />
+            <ThemePicker selectedTheme={theme} onThemeSelect={setTheme} region={region} onRegionChange={setRegion} imageQuality={imageQuality} onImageQualityChange={setImageQuality} illustrationStyle={illustrationStyle} onIllustrationStyleChange={setIllustrationStyle} />
           )}
         </div>
 

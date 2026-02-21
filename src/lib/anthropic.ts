@@ -34,9 +34,12 @@ export async function generateStory(
     jsonStr = jsonMatch[1];
   }
 
-  const story: StoryOutput = JSON.parse(jsonStr.trim());
+  // Strip trailing commas before } or ] (common LLM JSON error)
+  jsonStr = jsonStr.trim().replace(/,\s*([}\]])/g, "$1");
 
-  if (!story.title || !story.pages || story.pages.length !== 8) {
+  const story: StoryOutput = JSON.parse(jsonStr);
+
+  if (!story.title || !story.character_appearance || !story.pages || story.pages.length !== 8) {
     throw new Error("Invalid story output format");
   }
 

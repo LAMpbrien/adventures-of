@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { generateIllustration } from "@/lib/fal";
-import type { BookPage, Child, ImageQuality } from "@/types";
+import type { BookPage, Child, ImageQuality, IllustrationStyle } from "@/types";
 import { z } from "zod";
 
 export const maxDuration = 300; // 5 minutes for image generation
@@ -67,6 +67,8 @@ export async function POST(request: NextRequest) {
 
     const child = book.children as unknown as Child;
     const quality = (book.image_quality as ImageQuality) ?? "standard";
+    const illustrationStyle = (book.illustration_style as IllustrationStyle) ?? "watercolor";
+    const characterAppearance = (book.character_appearance as string) ?? undefined;
 
     // Fetch pages to generate images for
     const { data: pages, error: pagesError } = await supabase
@@ -90,18 +92,31 @@ export async function POST(request: NextRequest) {
         : pages.filter((p: BookPage) => !p.is_preview);
 
     // Generate illustrations for each target page
+    // Image chaining: page 1 uses the original photo, subsequent pages use
+    // the first generated illustration as reference for character consistency
     const primaryPhotoUrl = child.photo_urls[0];
     const failedPages: number[] = [];
+    let chainReferenceUrl: string | null = null;
 
     for (const page of targetPages as BookPage[]) {
       try {
+        const isChained = !!chainReferenceUrl;
         const imageUrl = await generateIllustration({
-          photoUrl: primaryPhotoUrl,
+          photoUrl: chainReferenceUrl || primaryPhotoUrl,
           childName: child.name,
           childAge: child.age,
           sceneDescription: page.image_prompt,
           quality,
+          illustrationStyle,
+          characterAppearance,
+          isChainedReference: isChained,
         });
+
+        // Use the first successfully generated illustration as the reference
+        // for all subsequent pages to maintain character consistency
+        if (!chainReferenceUrl) {
+          chainReferenceUrl = imageUrl;
+        }
 
         // Download image and upload to Supabase Storage
         const imageResponse = await fetch(imageUrl);

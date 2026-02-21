@@ -81,13 +81,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Save character appearance to the book for consistent illustration generation
+    const { error: updateError } = await supabase
+      .from("books")
+      .update({ character_appearance: story.character_appearance })
+      .eq("id", book_id);
+
+    if (updateError) {
+      console.error("Character appearance update error:", updateError);
+    }
+
     // Insert pages into database
     const pages = story.pages.map((page) => ({
       book_id,
       page_number: page.page_number,
       text: page.text,
       image_prompt: page.image_description,
-      is_preview: [1, 4, 8].includes(page.page_number),
+      is_preview: true,
     }));
 
     const { error: pagesError } = await supabase

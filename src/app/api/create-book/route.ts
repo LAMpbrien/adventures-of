@@ -16,6 +16,7 @@ const CreateBookSchema = z.object({
   theme: z.string().min(1),
   region: z.enum(["global", "au", "nz"]),
   image_quality: z.enum(["fast", "standard"]).default("standard"),
+  illustration_style: z.enum(["watercolor", "storybook", "cartoon", "pencil-sketch"]).default("watercolor"),
 }).refine(
   (data) => data.child_id || data.child_details,
   { message: "Either child_id or child_details is required." }
@@ -109,6 +110,7 @@ export async function POST(request: NextRequest) {
         child_id: childId,
         theme: body.theme,
         image_quality: body.image_quality,
+        illustration_style: body.illustration_style,
         status: "generating",
       })
       .select()
