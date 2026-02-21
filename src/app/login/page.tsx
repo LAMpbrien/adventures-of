@@ -86,9 +86,9 @@ function LoginForm() {
       <Card className="w-full max-w-sm">
         <CardContent className="pt-6">
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Sign In</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Welcome</h1>
             <p className="text-gray-600 text-sm mt-1">
-              Sign in to your account
+              Sign in or create an account to get started
             </p>
           </div>
 
